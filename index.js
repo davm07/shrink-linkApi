@@ -58,3 +58,20 @@ app.post('/api/shortenUrl', async (req, res) => {
     res.status(500).send('Error creating URL');
   }
 });
+
+app.get('/:shortenedUrl', async (req, res) => {
+  const { shortenedUrl } = req.params;
+
+  try {
+    const { originalUrl } = await urlSchema.findOne({ shortenedUrl });
+
+    if (!originalUrl) {
+      return res.status(404).send('URL not found');
+    }
+
+    res.redirect(originalUrl);
+  } catch (err) {
+    console.error('Error fetching URL:', err);
+    res.status(500).send('Error fetching URL');
+  }
+});
