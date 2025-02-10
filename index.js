@@ -30,8 +30,18 @@ app.get('/', (req, res) => {
 app.get('/api/urls/:userId', async (req, res) => {
   const { userId } = req.params;
 
-  const urlInfo = await urlSchema.find({ userId });
-  res.send(urlInfo);
+  try {
+    const urlInfo = await urlSchema.find({ userId });
+
+    if (!urlInfo || urlInfo.length === 0) {
+      return res.status(404).send('No URLs found for this user');
+    }
+
+    res.status(200).send(urlInfo);
+  } catch (err) {
+    console.error('Error fetching URLs:', err);
+    res.status(500).send('Error fetching URLs');
+  }
 });
 
 app.post('/api/shortenUrl', async (req, res) => {
