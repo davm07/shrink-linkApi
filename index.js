@@ -3,6 +3,7 @@ import express from 'express';
 import { connectDB } from './lib/db.js';
 import urlSchema from './models/urlSchema.js';
 import cors from 'cors';
+import urlRoutes from './routes/urlRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -27,51 +28,4 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.get('/api/urls/:userId', async (req, res) => {
-  const { userId } = req.params;
-
-  try {
-    const urlInfo = await urlSchema.find({ userId });
-
-    if (!urlInfo || urlInfo.length === 0) {
-      return res.status(404).send('No URLs found for this user');
-    }
-
-    res.status(200).send(urlInfo);
-  } catch (err) {
-    console.error('Error fetching URLs:', err);
-    res.status(500).send('Error fetching URLs');
-  }
-});
-
-app.post('/api/shortenUrl', async (req, res) => {
-  const { originalUrl, userId } = req.body;
-
-  try {
-    const shortenedUrl = await urlSchema.create({
-      originalUrl: originalUrl,
-      userId: userId
-    });
-    res.status(201).send(shortenedUrl);
-  } catch (err) {
-    console.error('Error creating URL:', err);
-    res.status(500).send('Error creating URL');
-  }
-});
-
-app.get('/:shortenedUrl', async (req, res) => {
-  const { shortenedUrl } = req.params;
-
-  try {
-    const { originalUrl } = await urlSchema.findOne({ shortenedUrl });
-
-    if (!originalUrl) {
-      return res.status(404).send('URL not found');
-    }
-
-    res.redirect(originalUrl);
-  } catch (err) {
-    console.error('Error fetching URL:', err);
-    res.status(500).send('Error fetching URL');
-  }
-});
+app.use(urlRoutes);
