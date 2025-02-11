@@ -57,7 +57,7 @@ export const deleteUserUrls = async (req, res) => {
     if (!deletedUrls) {
       return res.status(404).send('No URLs found for this user');
     }
-    res.status(200).send('URLs deleted successfully');
+    res.status(200).json({ message: 'URLs deleted successfully' });
   } catch (err) {
     console.error('Error deleting URLs:', err);
     res.status(500).send('Error deleting URLs');
