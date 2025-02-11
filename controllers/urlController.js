@@ -48,3 +48,18 @@ export const redirectToOriginalUrl = async (req, res) => {
     res.status(500).send('Error fetching URL');
   }
 };
+
+export const deleteUserUrls = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const deletedUrls = await urlSchema.deleteMany({ userId });
+    if (!deletedUrls) {
+      return res.status(404).send('No URLs found for this user');
+    }
+    res.status(200).send('URLs deleted successfully');
+  } catch (err) {
+    console.error('Error deleting URLs:', err);
+    res.status(500).send('Error deleting URLs');
+  }
+};
